@@ -1,0 +1,45 @@
+name: go-restapi
+
+services:
+  ### Server
+  server:
+    build:
+      context: ./.docker/server
+      dockerfile: Dockerfile
+    container_name: server
+    privileged: true
+    restart: always
+    tty: true
+    environment:
+      - "TZ=Asia/Tokyo"
+    volumes:
+      - type: bind
+        source: ./server
+        target: /go/src/github.com/mitsu3s/go-restapi/server
+        bind:
+          create_host_path: true
+    working_dir: /go/src/github.com/mitsu3s/go-restapi/server
+
+  ### Client
+  client:
+    build:
+      context: ./.docker/client
+      dockerfile: Dockerfile
+    container_name: client
+    privileged: true
+    restart: always
+    tty: true
+    environment:
+      - "TZ=Asia/Tokyo"
+    ports:
+      - mode: ingress
+        published: 8000
+        target: 8000
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: ./client
+        target: /go/src/github.com/mitsu3s/go-restapi/client
+        bind:
+          create_host_path: true
+    working_dir: /go/src/github.com/mitsu3s/go-restapi/client
